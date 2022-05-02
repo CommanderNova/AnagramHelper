@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<body style="background-color: rgb(36, 35, 35);" >
+
+<h1 style="color: white;">Anagram helper</h1>
+<input id="anagramSource" placeholder="Word to find an anagram to"><br>
+<input id="ideaSource" placeholder="Your anagram idea">
+<div id="result"></div>
+
+
+<script>
+const anagramSource = document.getElementById("anagramSource");
+const ideaSource = document.getElementById("ideaSource");
+const result = document.getElementById("result");
+
+function CountChars(stringToCount){
+  var usedCharCounts = new Object();
+  var stringChars = Array.from(stringToCount);
+  stringChars.forEach(char => {
+    if (char != " "){
+      var num = usedCharCounts[char];
+      num = num ? num : 0;
+  
+      usedCharCounts[char] = num + 1;
+    }
+  });
+
+  return usedCharCounts
+}
+
+function GetCharCountDisplayString(charCounts2){
+  var newString = "";
+
+  for (const [key, value] of Object.entries(charCounts2)) {
+    var color = "white";
+    
+    if (value < 0){
+      color = "red";
+    }
+    else if (value == 0){
+      color = "green";
+    }
+
+    newString += "<div style='color:" + color + ";'>" + key + ": " + value + "<\div>";
+  }
+
+  return newString
+}
+
+function SubtractChars(charCountsA, charCountsB){
+  var newCharCounts = new Object();
+  
+  for (const [key, value] of Object.entries(charCountsA)) {
+    newCharCounts[key] = charCountsA[key];
+  }
+
+  for (const [key, value] of Object.entries(charCountsB)) {
+    var count = newCharCounts[key];
+    count = count ? count : 0;
+
+    var countB = charCountsB[key];
+    countB = countB ? countB : 0;
+
+    var newCount = count - countB;
+    newCharCounts[key] = newCount;
+  }
+
+  return newCharCounts;
+}
+
+var charCounts, chars, anagramSourceString;
+
+function anagramIdeaInputHandler(e) {
+  var inputString = e.target.value.toLowerCase();
+  var usedCharCounts = CountChars(inputString);
+  var subtractedCharCounts = SubtractChars(charCounts, usedCharCounts)
+  
+  result.innerHTML = GetCharCountDisplayString(subtractedCharCounts);
+}
+
+function anagramSourceInputHandler(e) {
+  anagramSourceString = e.target.value;
+  anagramSourceString = anagramSourceString.replaceAll(" ", "");
+  anagramSourceString = anagramSourceString.toLowerCase();
+  
+  chars = Array.from(anagramSourceString);
+  charCounts = CountChars(chars);
+
+  var params = {target : {value : ideaSource.value}};
+  anagramIdeaInputHandler(params);
+}
+
+ideaSource.addEventListener("input", anagramIdeaInputHandler);
+ideaSource.addEventListener("change", anagramIdeaInputHandler);
+
+anagramSource.addEventListener("input", anagramSourceInputHandler);
+anagramSource.addEventListener("change", anagramSourceInputHandler);
+</script>
+
+</body>
+</html>
